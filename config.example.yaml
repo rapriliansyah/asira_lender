@@ -1,0 +1,24 @@
+development:
+  react_cors: true
+  database:
+    table: asira_lender
+    username: asirauser
+    password: asirapass
+    host: postgres_db
+    port: "5432"
+    maxlifetime: 30
+    idle_conns: 10
+    open_conns: 100
+    sslmode: disable
+    logmode: true
+    timezone: Asia/Jakarta
+  clients:
+    admin: Z3JhZGlvczp1bHRpbXVz
+    react: cmVhY3RrZXk6cmVhY3RwYXNz # reactkey:reactpass
+  jwt:
+    duration: 120 # in minutes
+    jwt_secret: sXQ8jUMpueOvN5P3cdCR
+
+staging:
+
+production:
