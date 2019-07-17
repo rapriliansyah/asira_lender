@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/labstack/echo/middleware"
 	"github.com/pressly/goose"
 )
 
@@ -33,10 +34,10 @@ func main() {
 	case "run":
 		e := router.NewRouter()
 		if asira.App.Config.GetBool("react_cors") {
-			// e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-			// 	AllowOrigins: []string{"*"},
-			// 	AllowHeaders: []string{"*"},
-			// }))
+			e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+				AllowOrigins: []string{"*"},
+				AllowHeaders: []string{"*"},
+			}))
 		}
 		e.Logger.Fatal(e.Start(":8001"))
 		os.Exit(0)
