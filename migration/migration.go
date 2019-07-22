@@ -3,6 +3,7 @@ package migration
 import (
 	"asira_lender/asira"
 	"asira_lender/models"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -58,6 +59,10 @@ func Seed() {
 		jMarshal, _ = json.Marshal(fees)
 		loans := []models.Loan{
 			models.Loan{
+				Bank: sql.NullInt64{
+					Int64: 1,
+					Valid: true,
+				},
 				LoanAmount:       5000000,
 				Installment:      8,
 				LoanIntention:    "a loan 1 intention",

@@ -10,7 +10,7 @@ import (
 type (
 	Loan struct {
 		BaseModel
-		DeletedTime time.Time      `json:"teleted_time" gorm:"column:deleted_time"`
+		DeletedTime time.Time      `json:"deleted_time" gorm:"column:deleted_time"`
 		Owner       sql.NullInt64  `json:"owner" gorm:"column:owner;foreignkey"`
 		Bank        sql.NullInt64  `json:"bank" gorm:"column:bank;foreignkey"`
 		Status      string         `json:"status" gorm:"column:status;type:varchar(255)" sql:"DEFAULT:'processing'"`

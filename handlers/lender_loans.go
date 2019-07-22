@@ -1,17 +1,53 @@
 package handlers
 
-// import (
-// 	"github.com/labstack/echo"
-// )
+import (
+	"asira_lender/models"
+	"database/sql"
+	"net/http"
+	"strconv"
 
-// func LenderLoanRequestList(c echo.Context) error {
-// 	defer c.Request().Body.Close()
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
+)
 
-// 	user := c.Get("user")
-// 	token := user.(*jwt.Token)
-// 	claims := token.Claims.(jwt.MapClaims)
+func LenderLoanRequestList(c echo.Context) error {
+	defer c.Request().Body.Close()
 
-// 	lenderModel := models.Bank{}
+	user := c.Get("user")
+	token := user.(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
 
-// 	lenderID, _ := strconv.Atoi(claims["jti"].(string))
-// }
+	lenderID, _ := strconv.Atoi(claims["jti"].(string))
+
+	// pagination parameters
+	rows, err := strconv.Atoi(c.QueryParam("rows"))
+	page, err := strconv.Atoi(c.QueryParam("page"))
+	orderby := c.QueryParam("orderby")
+	sort := c.QueryParam("sort")
+
+	// filters
+	status := c.QueryParam("status")
+	owner := c.QueryParam("owner")
+
+	type Filter struct {
+		Bank   sql.NullInt64 `json:"bank"`
+		Status string        `json:"status"`
+		Owner  string        `json:"owner"`
+	}
+
+	loan := models.Loan{}
+	result, err := loan.PagedFilterSearch(page, rows, orderby, sort, &Filter{
+		Bank: sql.NullInt64{
+			Int64: int64(lenderID),
+			Valid: true,
+		},
+		Owner:  owner,
+		Status: status,
+	})
+
+	if err != nil {
+		return returnInvalidResponse(http.StatusInternalServerError, err, "query result error")
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
