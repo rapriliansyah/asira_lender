@@ -49,6 +49,28 @@ func Seed() {
 		}
 
 		// seed loans
+		fees := []models.LoanFee{
+			models.LoanFee{
+				Description: "fee 1",
+				Amount:      1000,
+			},
+		}
+		jMarshal, _ = json.Marshal(fees)
+		loans := []models.Loan{
+			models.Loan{
+				LoanAmount:       5000000,
+				Installment:      8,
+				LoanIntention:    "a loan 1 intention",
+				IntentionDetails: "a loan 1 intention details",
+				Fees:             postgres.Jsonb{jMarshal},
+				Interest:         1.5,
+				TotalLoan:        float64(6500000),
+				LayawayPlan:      500000,
+			},
+		}
+		for _, loan := range loans {
+			loan.Create()
+		}
 	}
 }
 
