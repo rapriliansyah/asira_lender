@@ -45,3 +45,35 @@ func TestLenderGetLoanRequestList(t *testing.T) {
 		Expect().
 		Status(http.StatusUnauthorized).JSON().Object()
 }
+
+func TestLenderGetLoanRequestListDetail(t *testing.T) {
+	RebuildData()
+
+	api := router.NewRouter()
+
+	server := httptest.NewServer(api)
+
+	defer server.Close()
+
+	e := httpexpect.New(t, server.URL)
+
+	auth := e.Builder(func(req *httpexpect.Request) {
+		req.WithHeader("Authorization", "Basic "+clientBasicToken)
+	})
+
+	lendertoken := getLenderLoginToken(e, auth, "1")
+
+	auth = e.Builder(func(req *httpexpect.Request) {
+		req.WithHeader("Authorization", "Bearer "+lendertoken)
+	})
+
+	// valid response
+	auth.GET("/lender/loanrequest_list/1/detail").
+		Expect().
+		Status(http.StatusOK).JSON().Object()
+
+	// not owned by lender
+	auth.GET("/lender/loanrequest_list/2/detail").
+		Expect().
+		Status(http.StatusInternalServerError).JSON().Object()
+}

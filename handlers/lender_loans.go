@@ -51,3 +51,35 @@ func LenderLoanRequestList(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+func LenderLoanRequestListDetail(c echo.Context) error {
+	defer c.Request().Body.Close()
+
+	user := c.Get("user")
+	token := user.(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+
+	lenderID, _ := strconv.Atoi(claims["jti"].(string))
+
+	loan_id, err := strconv.Atoi(c.Param("loan_id"))
+
+	type Filter struct {
+		Bank sql.NullInt64 `json:"bank"`
+		ID   int           `json:"id"`
+	}
+
+	loan := models.Loan{}
+	result, err := loan.FilterSearchSingle(&Filter{
+		Bank: sql.NullInt64{
+			Int64: int64(lenderID),
+			Valid: true,
+		},
+		ID: loan_id,
+	})
+
+	if err != nil {
+		return returnInvalidResponse(http.StatusInternalServerError, err, "query result error")
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
