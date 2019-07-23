@@ -3,6 +3,7 @@ package migration
 import (
 	"asira_lender/asira"
 	"asira_lender/models"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -49,6 +50,46 @@ func Seed() {
 		}
 
 		// seed loans
+		fees := []models.LoanFee{
+			models.LoanFee{
+				Description: "fee 1",
+				Amount:      1000,
+			},
+		}
+		jMarshal, _ = json.Marshal(fees)
+		loans := []models.Loan{
+			models.Loan{
+				Bank: sql.NullInt64{
+					Int64: 1,
+					Valid: true,
+				},
+				LoanAmount:       5000000,
+				Installment:      8,
+				LoanIntention:    "a loan 1 intention",
+				IntentionDetails: "a loan 1 intention details",
+				Fees:             postgres.Jsonb{jMarshal},
+				Interest:         1.5,
+				TotalLoan:        float64(6500000),
+				LayawayPlan:      500000,
+			},
+			models.Loan{
+				Bank: sql.NullInt64{
+					Int64: 2,
+					Valid: true,
+				},
+				LoanAmount:       2000000,
+				Installment:      3,
+				LoanIntention:    "a loan 1 intention",
+				IntentionDetails: "a loan 1 intention details",
+				Fees:             postgres.Jsonb{jMarshal},
+				Interest:         1.5,
+				TotalLoan:        float64(3000000),
+				LayawayPlan:      200000,
+			},
+		}
+		for _, loan := range loans {
+			loan.Create()
+		}
 	}
 }
 

@@ -14,4 +14,8 @@ func LenderGroup(e *echo.Echo) {
 	// Profile endpoints
 	g.GET("/profile", handlers.LenderProfile)
 	g.PATCH("/profile", handlers.LenderProfileEdit)
+
+	// Loans endpoints
+	g.GET("/loanrequest_list", handlers.LenderLoanRequestList)
+	g.GET("/loanrequest_list/:loan_id/detail", handlers.LenderLoanRequestListDetail)
 }
