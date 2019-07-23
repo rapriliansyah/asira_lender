@@ -53,7 +53,39 @@ type (
 		RelatedAddress       string        `json:"related_address" gorm:"column:related_address;type:text"`
 		Bank                 sql.NullInt64 `json:"bank" gorm:"column:bank" sql:"DEFAULT:NULL"`
 		BankAccountNumber    string        `json:"bank_accountnumber" gorm:"column:bank_accountnumber"`
-		OTPverified          bool          `json:"otp_verified" gorm:"column:otp_verified;type:boolean" sql:"DEFAULT:FALSE"`
-		Password             string        `json:"password" gorm:"column:password;type:text;not null"`
 	}
 )
+
+func (b *Borrower) Create() (*Borrower, error) {
+	err := Create(&b)
+	return b, err
+}
+
+func (b *Borrower) Save() (*Borrower, error) {
+	err := Save(&b)
+	return b, err
+}
+
+func (b *Borrower) Delete() (*Borrower, error) {
+	b.DeletedTime = time.Now()
+	err := Save(&b)
+
+	return b, err
+}
+
+func (b *Borrower) FindbyID(id int) (*Borrower, error) {
+	err := FindbyID(&b, id)
+	return b, err
+}
+
+func (b *Borrower) FilterSearchSingle(filter interface{}) (*Borrower, error) {
+	err := FilterSearchSingle(&b, filter)
+	return b, err
+}
+
+func (b *Borrower) PagedFilterSearch(page int, rows int, orderby string, sort string, filter interface{}) (result PagedSearchResult, err error) {
+	borrowers := []Borrower{}
+	result, err = PagedFilterSearch(&borrowers, page, rows, orderby, sort, filter)
+
+	return result, err
+}

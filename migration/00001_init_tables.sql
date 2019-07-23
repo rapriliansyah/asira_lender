@@ -23,7 +23,7 @@ CREATE TABLE "borrowers" (
     "id" bigserial,
     "created_time" timestamptz DEFAULT CURRENT_TIMESTAMP,
     "updated_time" timestamptz DEFAULT CURRENT_TIMESTAMP,
-    "suspended_time" timestamptz,
+    "deleted_time" timestamptz,
     "fullname" varchar(255) NOT NULL,
     "gender" varchar(1) NOT NULL,
     "idcard_number" varchar(255) NOT NULL,
