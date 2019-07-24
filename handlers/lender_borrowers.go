@@ -48,3 +48,37 @@ func LenderBorrowerList(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+func LenderBorrowerListDetail(c echo.Context) error {
+	defer c.Request().Body.Close()
+
+	user := c.Get("user")
+	token := user.(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+
+	lenderID, _ := strconv.Atoi(claims["jti"].(string))
+
+	borrower_id, err := strconv.Atoi(c.Param("borrower_id"))
+	if err != nil {
+		return returnInvalidResponse(http.StatusUnprocessableEntity, err, "error parsing borrower id")
+	}
+	type Filter struct {
+		Bank sql.NullInt64 `json:"bank"`
+		ID   int           `json:"id"`
+	}
+
+	borrower := models.Borrower{}
+	result, err := borrower.FilterSearchSingle(&Filter{
+		Bank: sql.NullInt64{
+			Int64: int64(lenderID),
+			Valid: true,
+		},
+		ID: borrower_id,
+	})
+
+	if err != nil {
+		return returnInvalidResponse(http.StatusInternalServerError, err, "query result error")
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
