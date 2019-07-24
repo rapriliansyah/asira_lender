@@ -67,3 +67,17 @@ func (l *Loan) PagedFilterSearch(page int, rows int, orderby string, sort string
 
 	return result, err
 }
+
+func (l *Loan) Approve() error {
+	l.Status = "approved"
+
+	_, err := l.Save()
+	return err
+}
+
+func (l *Loan) Reject() error {
+	l.Status = "rejected"
+
+	_, err := l.Save()
+	return err
+}
