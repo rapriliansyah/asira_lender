@@ -24,6 +24,7 @@ CREATE TABLE "borrowers" (
     "created_time" timestamptz DEFAULT CURRENT_TIMESTAMP,
     "updated_time" timestamptz DEFAULT CURRENT_TIMESTAMP,
     "deleted_time" timestamptz,
+    "status" varchar(255),
     "fullname" varchar(255) NOT NULL,
     "gender" varchar(1) NOT NULL,
     "idcard_number" varchar(255) NOT NULL,

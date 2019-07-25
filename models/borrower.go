@@ -9,6 +9,7 @@ type (
 	Borrower struct {
 		BaseModel
 		DeletedTime          time.Time     `json:"deleted_time" gorm:"column:deleted_time"`
+		Status               string        `json:"status" gorm:"column:status"`
 		Fullname             string        `json:"fullname" gorm:"column:fullname;type:varchar(255);not_null"`
 		Gender               string        `json:"gender" gorm:"column:gender;type:varchar(1);not null`
 		IdCardNumber         string        `json:"idcard_number" gorm:"column:idcard_number;type:varchar(255);unique;not null"`
