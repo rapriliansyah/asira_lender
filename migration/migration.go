@@ -157,6 +157,10 @@ func Seed() {
 					Int64: 1,
 					Valid: true,
 				},
+				Owner: sql.NullInt64{
+					Int64: 1,
+					Valid: true,
+				},
 				LoanAmount:       5000000,
 				Installment:      8,
 				LoanIntention:    "a loan 1 intention",
@@ -169,6 +173,10 @@ func Seed() {
 			models.Loan{
 				Bank: sql.NullInt64{
 					Int64: 2,
+					Valid: true,
+				},
+				Owner: sql.NullInt64{
+					Int64: 1,
 					Valid: true,
 				},
 				LoanAmount:       2000000,

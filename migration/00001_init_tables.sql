@@ -78,6 +78,7 @@ CREATE TABLE "loans" (
     "updated_time" timestamptz DEFAULT CURRENT_TIMESTAMP,
     "deleted_time" timestamptz,
     "owner" bigint,
+    "owner_name" varchar(255),
     "bank" bigint,
     "status" varchar(255) DEFAULT  ('processing'),
     "loan_amount" FLOAT NOT NULL,
