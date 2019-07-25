@@ -27,10 +27,12 @@ func LenderBorrowerList(c echo.Context) error {
 
 	// filters
 	fullname := c.QueryParam("fullname")
+	status := c.QueryParam("status")
 
 	type Filter struct {
 		Bank     sql.NullInt64 `json:"bank"`
 		Fullname string        `json:"fullname"`
+		Status   string        `json:"status"`
 	}
 
 	borrower := models.Borrower{}
@@ -40,6 +42,7 @@ func LenderBorrowerList(c echo.Context) error {
 			Valid: true,
 		},
 		Fullname: fullname,
+		Status:   status,
 	})
 
 	if err != nil {
