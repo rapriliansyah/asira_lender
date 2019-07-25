@@ -30,12 +30,14 @@ func LenderLoanRequestList(c echo.Context) error {
 	status := c.QueryParam("status")
 	owner := c.QueryParam("owner")
 	ownerName := c.QueryParam("owner_name")
+	id := c.QueryParam("id")
 
 	type Filter struct {
 		Bank      sql.NullInt64 `json:"bank"`
 		Status    string        `json:"status"`
 		Owner     string        `json:"owner"`
 		OwnerName string        `json:"owner_name"`
+		ID        string        `json:"id"`
 	}
 
 	loan := models.Loan{}
@@ -47,6 +49,7 @@ func LenderLoanRequestList(c echo.Context) error {
 		Owner:     owner,
 		Status:    status,
 		OwnerName: ownerName,
+		ID:        id,
 	})
 
 	if err != nil {
