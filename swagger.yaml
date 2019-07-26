@@ -1,0 +1,829 @@
+openapi: 3.0.0
+servers:
+# Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/ayannahindonesia/Asira_Lender/1.0.0
+  - description: Indonesia Asira Lender dev
+    url: http://35.240.245.40:8001
+  - description: Indonesia Asira Lender staging
+    url: https://staging-indo.asira.com/v1
+info:
+  version: '1.0.0'
+  title: 'Asira Lender Documentation'
+  description: ''
+tags:
+  - name : Public
+    description: public endpoints
+  - name : Client
+    description: endpoint for clients
+  - name : Lender
+    description: endpoint for lender
+security:
+  - application:
+      - read
+      - write
+paths:
+  /clientauth:
+    get:
+      tags:
+        - Public
+      summary: initial client login using base64 encoded client key and secret
+      parameters:
+        - $ref: '#/components/parameters/clienttoken'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/jwtResponse'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /client/lender_login:
+    post:
+      tags:
+        - Client
+      summary: lender user login
+      parameters:
+        - $ref: '#/components/parameters/authtoken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/lenderLoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/jwtResponse'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /lender/profile:
+    get:
+      tags:
+        - Lender
+      summary: get current lender's profile
+      parameters:
+        - $ref: '#/components/parameters/authtoken'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/lenderProfile'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      tags:
+        - Lender
+      summary: edit current lender's profile
+      parameters:
+        - $ref: '#/components/parameters/authtoken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/lenderProfilePatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/lenderProfilePatchResponse'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /lender/borrower_list:
+    get:
+      tags:
+        - Lender
+      summary: list of all borrowers of current lender
+      parameters:
+        - $ref: '#/components/parameters/authtoken'
+        - in: query
+          name: rows
+          schema:
+            type: integer
+            example: 2
+          description: how many data shown in one page
+        - in: query
+          name: page
+          schema:
+            type: string
+            example: 1
+          description: current open page
+        - in: query
+          name: orderby
+          schema:
+            type: string
+          description: order by
+        - in: query
+          name: sort
+          schema:
+            type: string
+            example: "asc"
+          description: sort ascending or descending
+        - in: query
+          name: status
+          schema:
+            type: string
+            example: rejected
+          description: search by borrower status
+        - in: query
+          name: fullname
+          schema:
+            type: string
+            example: Full Name A
+          description: search by borrower fullname
+        - in: query
+          name: id
+          schema:
+            type: string
+            example: 1
+          description: search by borrower id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/lendersBorrowerList'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /lender/borrower_list/[borrower_id]/detail:
+    get:
+      tags:
+        - Lender
+      summary: list of requested loan to current lender
+      parameters:
+        - $ref: '#/components/parameters/authtoken'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/lendersBorrowerDetail'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /lender/loanrequest_list:
+    get:
+      tags:
+        - Lender
+      summary: list of requested loan to current lender
+      parameters:
+        - $ref: '#/components/parameters/authtoken'
+        - in: query
+          name: rows
+          schema:
+            type: integer
+            example: 2
+          description: how many data shown in one page
+        - in: query
+          name: page
+          schema:
+            type: string
+            example: 1
+          description: current open page
+        - in: query
+          name: orderby
+          schema:
+            type: string
+          description: order by
+        - in: query
+          name: sort
+          schema:
+            type: string
+            example: "asc"
+          description: sort ascending or descending
+        - in: query
+          name: status
+          schema:
+            type: string
+            example: rejected
+          description: search by loan status
+        - in: query
+          name: owner_name
+          schema:
+            type: string
+            example: Full Name A
+          description: search by loan owner name
+        - in: query
+          name: id
+          schema:
+            type: string
+            example: 1
+          description: search by loan id
+        - in: query
+          name: start_date
+          schema:
+            type: string
+            example: "2019-01-01"
+        - in: query
+          name: end_date
+          schema:
+            type: string
+            example: "2019-12-12"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/loanList'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /lender/loanrequest_list/[loan_id]/detail:
+    get:
+      tags:
+        - Lender
+      summary: list of requested loan to current lender
+      parameters:
+        - $ref: '#/components/parameters/authtoken'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/loanListDetail'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /lender/loanrequest_list/[loan_id]/detail/[approval]:
+    get:
+      tags:
+        - Lender
+      summary: approve or reject loan request. approval = 'approve' / 'reject'
+      parameters:
+        - $ref: '#/components/parameters/authtoken'
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    jwtResponse:
+      properties:
+        expires_in:
+          type: number
+          example: 1200
+        token:
+          type: string
+          example: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZHJva2V5IiwiaXNfaWfaweiufh2198eu9128jd98wjhdQxNjgsImp0aSI6ImFuZHJva2V5In0.gCPTFIe-GnE9pduQaCfOV8hGo5ttXOalE9Egrsjb9f832hw9eijhdw98jhDVxWa1u6cWfSxMrCReviekgkqflZdA
+    lenderLoginRequest:
+      properties:
+        key:
+          type: string
+          example: BANKID
+        password:
+          type: string
+          example: password
+    ErrorResponse:
+      type: object
+      properties:
+        details:
+          type: object
+        message:
+          type: string
+          example: this is your error message
+    lenderProfile:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Bank A
+        type:
+          type: string
+          example: BPD
+        address:
+          type: string
+          example: st. bankalogy
+        province:
+          type: string
+          example: province Bank A
+        city:
+          type: string
+          example: city A
+        services:
+          type: array
+          items:
+            type: number
+          example: [3, 5, 10]
+          description: service ids
+        pic_name:
+          type: string
+          example: Liana
+        phone:
+          type: string
+          example: "081234567890"
+        join_date:
+          type: string
+          example: "2019-06-26T16:40:33.372829+07:00"
+    lenderProfilePatchRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Bank A revised
+        type:
+          type: string
+          example: type revise
+        address:
+          type: string
+          example: address revise
+        province:
+          type: string
+          example: province Bank A revise
+        city:
+          type: string
+          example: city A revise
+        services:
+          type: array
+          items:
+            type: number
+          example: [1, 2, 3]
+          description: service ids
+        pic:
+          type: string
+          example: Tony
+        phone:
+          type: string
+          example: "081234567895"
+    lenderProfilePatchResponse:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: Bank A revised
+        type:
+          type: string
+          example: type revise
+        address:
+          type: string
+          example: address revise
+        province:
+          type: string
+          example: province Bank A revise
+        city:
+          type: string
+          example: city A revise
+        services:
+          type: array
+          items:
+            type: number
+          example: [1, 2, 3]
+          description: service ids
+        pic_name:
+          type: string
+          example: Tony
+        phone:
+          type: string
+          example: "081234567895"
+        join_date:
+          type: string
+          example: "2019-06-26T16:40:33.372829+07:00"
+    lendersBorrowerList:
+      type: object
+      properties:
+        total_data:
+          type: number
+          example: 3
+        rows:
+          type: number
+          example: 5
+        current_page:
+         type: number
+         example: 1
+        last_page:
+         type: number
+         example: 1
+        from:
+         type: number
+         example: 1
+        to:
+         type: number
+         example: 3
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/lendersBorrowerDetail'
+    lendersBorrowerDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        created_time:
+          type: string
+          example: "1999-12-31T00:00:00.000Z"
+        status:
+          type: string
+          example: active
+          enum:
+            - active
+            - inactive
+        applied_loans:
+          type: number
+          example: 2
+        fullname:
+          type: string
+          example: Benedict Cucumbatch
+        gender:
+          type: string
+          example: M
+          enum:
+            - M
+            - F
+        idcard_number:
+          type: string
+          example: "543219876231"
+        idcard_imageid:
+          type: string
+          example: "13"
+          description: image id. get the base64 encoded by redeeming the id to borrower's image endpoint
+        taxid_number:
+          type: string
+          example: "1928374650"
+        taxid_imageid:
+          type: string
+          example: "23"
+          description: image id. get the base64 encoded by redeeming the id to borrower's image endpoint
+        email:
+          type: string
+          example: ben@avenger.com
+        birthday:
+          type: string
+          example: "1999-12-31T00:00:00.000Z"
+          description: format yyyy-mm-ddThh:mm:ssZ
+        birthplace:
+          type: string
+          example: Cambridge
+        last_education:
+          type: string
+          example: Master
+        mother_name:
+          type: string
+          example: Eve
+        phone:
+          type: string
+          example: "081234567890"
+        marriage_status:
+          type: string
+          example: married
+        spouse_name:
+          type: string
+          example: Benny
+          description: nama pasangan
+        spouse_birthday:
+          type: string
+          example: "1999-12-31T00:00:00.000Z"
+          description: format yyyy-mm-ddThh:mm:ssZ
+        spouse_lasteducation:
+          type: string
+          example: Master
+        dependants:
+          type: number
+          example: 3
+          description: tanggunan
+        address:
+          type: string
+          example: sesame st.
+        province:
+          type: string
+          example: le province
+        city:
+          type: string
+          example: el city
+        neighbour_association:
+          type: string
+          example: "001"
+          description: rukun tetangga
+        hamlets:
+          type: string
+          example: "002"
+          description: rukun warga
+        home_phonenumber:
+          type: string
+          example: "021234567"
+        subdistrict:
+          type: string
+          example: setiabudi
+          description: kecamatan
+        urban_village:
+          type: string
+          example: sukadamai
+          description: kelurahan
+        home_ownership:
+          type: string
+          example: private owned
+          description: status kepemilikan rumah
+        lived_for:
+          type: number
+          example: 24
+          description: in month
+        occupation:
+          type: string
+          example: magician
+        employee_id:
+          type: string
+          example: "4132"
+        employer_name:
+          type: string
+          example: stark industries
+        employer_address:
+          type: string
+          example: street that never was
+        department:
+          type: string
+          example: magics
+        been_workingfor:
+          type: number
+          example: 16
+          description: in month
+        direct_superiorname:
+          type: string
+          example: Tony Stark
+        employer_number:
+          type: string
+          example: "021987653"
+          description: employer office phone number
+        monthly_income:
+          type: number
+          example: 8000000
+          description: monthly
+        other_income:
+          type: number
+          example: 2000000
+          description: monthly
+        other_incomesource:
+          type: string
+          example: magic performance
+        field_of_work:
+          type: string
+          example: magics
+          enum:
+            - IT
+            - Human Resource
+            - Building Industries
+        related_personname:
+          type: string
+          example: Bella
+          description: other related person that not living in the same roof
+        related_relation:
+          type: string
+          example: friend
+        related_phonenumber:
+          type: string
+          example: "082345678912"
+        related_homenumber:
+          type: string
+          example: "02123456789"
+        related_address:
+          type: string
+          example: bellas address
+        bank:
+          type: number
+          description: asira bank id
+          example: 1
+        bank_accountnumber:
+          type: string
+          example: "056374817362738"
+    loanList:
+      type: object
+      properties:
+        total_data:
+          type: number
+          example: 3
+        rows:
+          type: number
+          example: 5
+        current_page:
+         type: number
+         example: 1
+        last_page:
+         type: number
+         example: 1
+        from:
+         type: number
+         example: 1
+        to:
+         type: number
+         example: 3
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/loanListDetail'
+    loanListDetail:
+      properties:
+        id:
+          type: string
+          example: loan_01
+        created_time:
+          type: string
+          example: "2019-06-26T16:40:33.372829+07:00"
+        updated_time:
+          type: string
+          example: "2019-06-26T16:40:33.372829+07:00"
+        deleted_time:
+          type: string
+          example: "2019-06-26T16:40:33.372829+07:00"
+        owner:
+          type: object
+          properties:
+            Int64:
+              type: number
+              example: 1
+              description: borrower id
+            Valid:
+              type: boolean
+              example: true
+        owner_name:
+          type: string
+          example: owname
+        status:
+          type: string
+          example: processing
+        loan_amount:
+          type: number
+          example: 2000000
+        installment:
+          type: number
+          example: 12
+          description: in month
+        fees:
+          type: array
+          items:
+            $ref: '#/components/schemas/loanListDetailFees'
+          example:
+            - description: fee_01
+              amount: 100
+            - description: fee_02
+              amount: 200
+        interest:
+          type: number
+          example: 1.5
+          description: in percent
+        total_loan:
+          type: number
+          example: 2030000
+        due_date:
+          type: string
+          example: "2019-06-26T16:40:33.372829+07:00"
+          description: date when loan must be paid in full.
+        layaway_plan:
+          type: number
+          example: 50000
+        loan_intention:
+          type: string
+          example: its loan intention
+        intention_details:
+          type: string
+          example: the details
+    loanListDetailFees:
+      type: object
+      properties:
+        description:
+          type: string
+          example: fee_01
+        amount:
+          type: number
+          example: 100
+  parameters:
+    clienttoken:
+      required: true
+      in: header
+      name: Authorization
+      schema:
+        type: string
+      description: JWT bearer token basic auth
+      example: >-
+        Basic Yf983jf9we8f9jf9832jf3=
+    authtoken:
+      required: true
+      in: header
+      name: Authorization
+      schema:
+        type: string
+      description: JWT bearer token basic auth
+      example: >-
+        Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c

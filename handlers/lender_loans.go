@@ -31,13 +31,16 @@ func LenderLoanRequestList(c echo.Context) error {
 	owner := c.QueryParam("owner")
 	ownerName := c.QueryParam("owner_name")
 	id := c.QueryParam("id")
+	start_date := c.QueryParam("start_date")
+	end_date := c.QueryParam("end_date")
 
 	type Filter struct {
-		Bank      sql.NullInt64 `json:"bank"`
-		Status    string        `json:"status"`
-		Owner     string        `json:"owner"`
-		OwnerName string        `json:"owner_name"`
-		ID        string        `json:"id"`
+		Bank        sql.NullInt64        `json:"bank"`
+		Status      string               `json:"status"`
+		Owner       string               `json:"owner"`
+		OwnerName   string               `json:"owner_name" condition:"LIKE"`
+		DateBetween models.CompareFilter `json:"created_time" condition:"BETWEEN"`
+		ID          string               `json:"id"`
 	}
 
 	loan := models.Loan{}
@@ -50,6 +53,10 @@ func LenderLoanRequestList(c echo.Context) error {
 		Status:    status,
 		OwnerName: ownerName,
 		ID:        id,
+		DateBetween: models.CompareFilter{
+			Value1: start_date,
+			Value2: end_date,
+		},
 	})
 
 	if err != nil {

@@ -29,6 +29,11 @@ type (
 		To          int         `json:"to"`   // last index of data shown in current page
 		Data        interface{} `json:"data"`
 	}
+
+	CompareFilter struct {
+		Value1 interface{} `json:"value1"`
+		Value2 interface{} `json:"value2"`
+	}
 )
 
 // helper for inserting data using gorm.DB functions
@@ -130,7 +135,16 @@ func PagedFilterSearch(i interface{}, page int, rows int, orderby string, sort s
 	for x := 0; x < refFilter.NumField(); x++ {
 		field := refFilter.Field(x)
 		if field.Interface() != "" {
-			db = db.Where(fmt.Sprintf("%s = ?", refType.Field(x).Tag.Get("json")), field.Interface())
+			switch refType.Field(x).Tag.Get("condition") {
+			default:
+				db = db.Where(fmt.Sprintf("%s = ?", refType.Field(x).Tag.Get("json")), field.Interface())
+			case "LIKE":
+				db = db.Where(fmt.Sprintf("%s %s ?", refType.Field(x).Tag.Get("json"), refType.Field(x).Tag.Get("condition")), "%"+field.Interface().(string)+"%")
+			case "BETWEEN":
+				if values, ok := field.Interface().(CompareFilter); ok && values.Value1 != "" {
+					db = db.Where(fmt.Sprintf("%s %s ? %s ?", refType.Field(x).Tag.Get("json"), refType.Field(x).Tag.Get("condition"), "AND"), values.Value1, values.Value2)
+				}
+			}
 		}
 	}
 
