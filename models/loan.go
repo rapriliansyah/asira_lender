@@ -12,6 +12,7 @@ type (
 		BaseModel
 		DeletedTime time.Time      `json:"deleted_time" gorm:"column:deleted_time"`
 		Owner       sql.NullInt64  `json:"owner" gorm:"column:owner;foreignkey"`
+		OwnerName   string         `json:"owner_name" gorm:"column:owner_name"`
 		Bank        sql.NullInt64  `json:"bank" gorm:"column:bank;foreignkey"`
 		Status      string         `json:"status" gorm:"column:status;type:varchar(255)" sql:"DEFAULT:'processing'"`
 		LoanAmount  float64        `json:"loan_amount" gorm:"column:loan_amount;type:int;not null"`
@@ -66,4 +67,18 @@ func (l *Loan) PagedFilterSearch(page int, rows int, orderby string, sort string
 	result, err = PagedFilterSearch(&loans, page, rows, orderby, sort, filter)
 
 	return result, err
+}
+
+func (l *Loan) Approve() error {
+	l.Status = "approved"
+
+	_, err := l.Save()
+	return err
+}
+
+func (l *Loan) Reject() error {
+	l.Status = "rejected"
+
+	_, err := l.Save()
+	return err
 }

@@ -9,10 +9,13 @@ type (
 	Borrower struct {
 		BaseModel
 		DeletedTime          time.Time     `json:"deleted_time" gorm:"column:deleted_time"`
+		Status               string        `json:"status" gorm:"column:status"`
 		Fullname             string        `json:"fullname" gorm:"column:fullname;type:varchar(255);not_null"`
 		Gender               string        `json:"gender" gorm:"column:gender;type:varchar(1);not null`
 		IdCardNumber         string        `json:"idcard_number" gorm:"column:idcard_number;type:varchar(255);unique;not null"`
+		IdCardImageID        string        `json:"idcard_imageid" gorm:"column:idcard_imageid;type:varchar(255)"`
 		TaxIDnumber          string        `json:"taxid_number" gorm:"column:taxid_number;type:varchar(255)"`
+		TaxIDImageID         string        `json:"taxid_imageid" gorm:"column:taxid_imageid;type:varchar(255)"`
 		Email                string        `json:"email" gorm:"column:email;type:varchar(255);unique"`
 		Birthday             time.Time     `json:"birthday" gorm:"column:birthday;not null"`
 		Birthplace           string        `json:"birthplace" gorm:"column:birthplace;type:varchar(255);not null"`
@@ -53,7 +56,39 @@ type (
 		RelatedAddress       string        `json:"related_address" gorm:"column:related_address;type:text"`
 		Bank                 sql.NullInt64 `json:"bank" gorm:"column:bank" sql:"DEFAULT:NULL"`
 		BankAccountNumber    string        `json:"bank_accountnumber" gorm:"column:bank_accountnumber"`
-		OTPverified          bool          `json:"otp_verified" gorm:"column:otp_verified;type:boolean" sql:"DEFAULT:FALSE"`
-		Password             string        `json:"password" gorm:"column:password;type:text;not null"`
 	}
 )
+
+func (b *Borrower) Create() (*Borrower, error) {
+	err := Create(&b)
+	return b, err
+}
+
+func (b *Borrower) Save() (*Borrower, error) {
+	err := Save(&b)
+	return b, err
+}
+
+func (b *Borrower) Delete() (*Borrower, error) {
+	b.DeletedTime = time.Now()
+	err := Save(&b)
+
+	return b, err
+}
+
+func (b *Borrower) FindbyID(id int) (*Borrower, error) {
+	err := FindbyID(&b, id)
+	return b, err
+}
+
+func (b *Borrower) FilterSearchSingle(filter interface{}) (*Borrower, error) {
+	err := FilterSearchSingle(&b, filter)
+	return b, err
+}
+
+func (b *Borrower) PagedFilterSearch(page int, rows int, orderby string, sort string, filter interface{}) (result PagedSearchResult, err error) {
+	borrowers := []Borrower{}
+	result, err = PagedFilterSearch(&borrowers, page, rows, orderby, sort, filter)
+
+	return result, err
+}

@@ -18,4 +18,9 @@ func LenderGroup(e *echo.Echo) {
 	// Loans endpoints
 	g.GET("/loanrequest_list", handlers.LenderLoanRequestList)
 	g.GET("/loanrequest_list/:loan_id/detail", handlers.LenderLoanRequestListDetail)
+	g.GET("/loanrequest_list/:loan_id/detail/:approve_reject", handlers.LenderLoanApproveReject)
+
+	// Borrowers endpoints
+	g.GET("/borrower_list", handlers.LenderBorrowerList)
+	g.GET("/borrower_list/:borrower_id/detail", handlers.LenderBorrowerListDetail)
 }
