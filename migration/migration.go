@@ -72,6 +72,20 @@ func Seed() {
 				TotalLoan:        float64(6500000),
 				LayawayPlan:      500000,
 			},
+			models.Loan{
+				Bank: sql.NullInt64{
+					Int64: 2,
+					Valid: true,
+				},
+				LoanAmount:       2000000,
+				Installment:      3,
+				LoanIntention:    "a loan 1 intention",
+				IntentionDetails: "a loan 1 intention details",
+				Fees:             postgres.Jsonb{jMarshal},
+				Interest:         1.5,
+				TotalLoan:        float64(3000000),
+				LayawayPlan:      200000,
+			},
 		}
 		for _, loan := range loans {
 			loan.Create()
