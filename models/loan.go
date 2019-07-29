@@ -10,8 +10,10 @@ import (
 type (
 	Loan struct {
 		BaseModel
-		DeletedTime time.Time      `json:"teleted_time" gorm:"column:deleted_time"`
+		DeletedTime time.Time      `json:"deleted_time" gorm:"column:deleted_time"`
 		Owner       sql.NullInt64  `json:"owner" gorm:"column:owner;foreignkey"`
+		OwnerName   string         `json:"owner_name" gorm:"column:owner_name"`
+		Bank        sql.NullInt64  `json:"bank" gorm:"column:bank;foreignkey"`
 		Status      string         `json:"status" gorm:"column:status;type:varchar(255)" sql:"DEFAULT:'processing'"`
 		LoanAmount  float64        `json:"loan_amount" gorm:"column:loan_amount;type:int;not null"`
 		Installment int            `json:"installment" gorm:"column:installment;type:int;not null"` // plan of how long loan to be paid
@@ -41,4 +43,42 @@ func (l *Loan) Create() (*Loan, error) {
 func (l *Loan) Save() (*Loan, error) {
 	err := Save(&l)
 	return l, err
+}
+
+func (l *Loan) Delete() (*Loan, error) {
+	l.DeletedTime = time.Now()
+	err := Save(&l)
+
+	return l, err
+}
+
+func (l *Loan) FindbyID(id int) (*Loan, error) {
+	err := FindbyID(&l, id)
+	return l, err
+}
+
+func (l *Loan) FilterSearchSingle(filter interface{}) (*Loan, error) {
+	err := FilterSearchSingle(&l, filter)
+	return l, err
+}
+
+func (l *Loan) PagedFilterSearch(page int, rows int, orderby string, sort string, filter interface{}) (result PagedSearchResult, err error) {
+	loans := []Loan{}
+	result, err = PagedFilterSearch(&loans, page, rows, orderby, sort, filter)
+
+	return result, err
+}
+
+func (l *Loan) Approve() error {
+	l.Status = "approved"
+
+	_, err := l.Save()
+	return err
+}
+
+func (l *Loan) Reject() error {
+	l.Status = "rejected"
+
+	_, err := l.Save()
+	return err
 }
