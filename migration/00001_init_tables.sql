@@ -78,6 +78,7 @@ CREATE TABLE "loans" (
     "updated_time" timestamptz DEFAULT CURRENT_TIMESTAMP,
     "deleted_time" timestamptz,
     "owner" bigint,
+    "bank" bigint,
     "status" varchar(255) DEFAULT  ('processing'),
     "loan_amount" FLOAT NOT NULL,
     "installment" int NOT NULL,
@@ -88,8 +89,8 @@ CREATE TABLE "loans" (
     "layaway_plan" FLOAT NOT NULL,
     "loan_intention" varchar(255) NOT NULL,
     "intention_details" text NOT NULL,
-    "otp_verified" BOOLEAN,
     FOREIGN KEY ("owner") REFERENCES borrowers(id),
+    FOREIGN KEY ("bank") REFERENCES banks(id),
     PRIMARY KEY ("id")
 ) WITH (OIDS = FALSE);
 
