@@ -12,6 +12,11 @@ development:
     sslmode: disable
     logmode: true
     timezone: Asia/Jakarta
+  kafka:
+    host: kafka
+    port: "9092"
+    user: asirauser
+    pass: asirapass
   clients:
     admin: Z3JhZGlvczp1bHRpbXVz
     react: cmVhY3RrZXk6cmVhY3RwYXNz # reactkey:reactpass
