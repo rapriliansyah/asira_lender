@@ -17,6 +17,8 @@ development:
     port: "9092"
     user: asirauser
     pass: asirapass
+    topics:
+      new_loan: new_loan_request
   clients:
     admin: Z3JhZGlvczp1bHRpbXVz
     react: cmVhY3RrZXk6cmVhY3RwYXNz # reactkey:reactpass
