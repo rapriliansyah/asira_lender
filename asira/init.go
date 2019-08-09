@@ -146,6 +146,9 @@ func (x *Application) KafkaInit() (err error) {
 	}
 
 	conf := sarama.NewConfig()
+	if kafkaConf["sasl"].(bool) {
+		conf.Net.SASL.Enable = true
+	}
 	conf.Net.SASL.User = kafkaConf["user"].(string)
 	conf.Net.SASL.Password = kafkaConf["pass"].(string)
 	conf.Producer.Return.Successes = true
