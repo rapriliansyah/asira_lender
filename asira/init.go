@@ -146,6 +146,7 @@ func (x *Application) KafkaInit() (err error) {
 	}
 
 	conf := sarama.NewConfig()
+	conf.ClientID = kafkaConf["client_id"].(string)
 	if kafkaConf["sasl"].(bool) {
 		conf.Net.SASL.Enable = true
 	}

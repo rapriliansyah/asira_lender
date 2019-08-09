@@ -17,6 +17,7 @@ development:
     port: "9092"
     user: user
     pass: oRB5KjfuHdXc
+    client_id: asira
     sasl: true
     log_verbose: true
     topics:
