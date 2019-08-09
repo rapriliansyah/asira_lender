@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
 	"strings"
 	"time"
 
@@ -160,40 +159,6 @@ func (x *Application) KafkaInit() (err error) {
 	if err != nil {
 		return err
 	}
-	KafkaConsumerListen(x)
 
 	return nil
-}
-
-func KafkaConsumerListen(app *Application) {
-	topics := app.Config.GetStringMap(fmt.Sprintf("%s.kafka.topics", app.ENV))
-	consumer, err := app.Kafka.Consumer.ConsumePartition(topics["new_loan"].(string), 0, sarama.OffsetOldest)
-	if err != nil {
-		panic(err)
-	}
-
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
-
-	// Count how many message processed
-	msgCount := 0
-
-	// Get signal for finish
-	doneCh := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case err := <-consumer.Errors():
-				log.Println(err)
-			case msg := <-consumer.Messages():
-				msgCount++
-				log.Printf("Received messages %s. value : %s", string(msg.Key), string(msg.Value))
-			case <-signals:
-				log.Println("Interrupt is detected")
-				doneCh <- struct{}{}
-			}
-		}
-	}()
-
-	// <-doneCh
 }
