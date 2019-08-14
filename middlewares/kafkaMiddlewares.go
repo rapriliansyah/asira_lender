@@ -10,11 +10,16 @@ import (
 	"github.com/Shopify/sarama"
 )
 
-type AsiraKafkaHandlers struct {
-	KafkaProducer     sarama.AsyncProducer
-	KafkaConsumer     sarama.Consumer
-	PartitionConsumer sarama.PartitionConsumer
-}
+type (
+	AsiraKafkaHandlers struct {
+		KafkaProducer     sarama.AsyncProducer
+		KafkaConsumer     sarama.Consumer
+		PartitionConsumer sarama.PartitionConsumer
+	}
+	BorrowerInfo struct {
+		Info interface{} `json:"borrower_info"`
+	}
+)
 
 func init() {
 	topics := asira.App.Config.GetStringMap(fmt.Sprintf("%s.kafka.topics", asira.App.ENV))
@@ -32,13 +37,15 @@ func init() {
 				log.Printf("error occured when listening kafka : %v", err)
 			}
 			if message != nil {
-				loan := models.Loan{}
-				err := json.Unmarshal(message, &loan)
+				err = syncBorrowerData(message)
 				if err != nil {
 					log.Println(err)
 				}
-				loan.ID = uint64(0) // remove ID so it can create new instead of using id from borrower
-				loan.Create()
+
+				err := syncLoanData(message)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 		}
 	}()
@@ -62,4 +69,39 @@ func (k *AsiraKafkaHandlers) Listen() ([]byte, error) {
 	}
 
 	return nil, fmt.Errorf("unidentified error while listening")
+}
+
+func syncLoanData(kafkaMessage []byte) (err error) {
+	var loan models.Loan
+	err = json.Unmarshal(kafkaMessage, &loan)
+	if err != nil {
+		return err
+	}
+
+	// loan.ID = uint64(0) // remove ID so it can create new instead of using id from borrower
+	// loan.Create()
+	_, err = loan.Save()
+	return err
+}
+
+func syncBorrowerData(kafkaMessage []byte) (err error) {
+	var borrowerInfo BorrowerInfo
+	var borrower models.Borrower
+	err = json.Unmarshal(kafkaMessage, &borrowerInfo)
+	if err != nil {
+		return err
+	}
+
+	marshal, err := json.Marshal(borrowerInfo.Info)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(marshal, &borrower)
+	if err != nil {
+		return err
+	}
+
+	_, err = borrower.Save()
+	return err
 }
